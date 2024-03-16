@@ -55,13 +55,13 @@ bool first_hour = 0;
 #if _USE_60KHZ_
 #define STOP_60KHZ                                                             \
   {                                                                            \
-    ledc_channel.duty = 0;                                                     \
+    ledc_channel.duty = 4;                                                     \
     ledc_channel_config(&ledc_channel);                                        \
   }
 
 #define START_60KHZ                                                            \
   {                                                                            \
-    ledc_channel.duty = 1;                                                     \
+    ledc_channel.duty = 16;                                                    \
     ledc_channel_config(&ledc_channel);                                        \
   }
 #else
@@ -69,24 +69,9 @@ bool first_hour = 0;
 #define START_60KHZ
 #endif
 
-#define MARK_                                                                  \
-  {                                                                            \
-    STOP_60KHZ;                                                                \
-    digitalWrite(WWVB_OutInv, LOW);                                            \
-    if (WWVB_Enable)                                                           \
-      digitalWrite(WWVB_OutPin, HIGH);                                         \
-  }
-
-#define SPACE_                                                                 \
-  {                                                                            \
-    START_60KHZ;                                                               \
-    digitalWrite(WWVB_OutInv, HIGH);                                           \
-    digitalWrite(WWVB_OutPin, LOW);                                            \
-  }
-
 bool WWVB_Enable = 0;
 
-/*/ //////////////////////////////////////////////////////////////////////////*/
+/*///////////////////////////////////////////////////////////////////////////*/
 
 #include "driver/ledc.h"
 
@@ -99,8 +84,8 @@ static void ledc_init(void) {
   ledc_timer_config_t ledc_timer;
   ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
   ledc_timer.timer_num = LEDC_TIMER_1;
-  ledc_timer.duty_resolution = LEDC_TIMER_1_BIT;
-  ledc_timer.freq_hz = 60000; // set output frequency at 2.7 MHz
+  ledc_timer.duty_resolution = LEDC_TIMER_5_BIT;  //for AM modulation
+  ledc_timer.freq_hz = 60000; // set output frequency at 60KHz for WWVB
   //ledc_timer.clk_cfg = LEDC_APB_CLK;
   ledc_timer_config(&ledc_timer);
 
@@ -114,6 +99,23 @@ static void ledc_init(void) {
   ledc_channel.hpoint = 0;
   ledc_channel_config(&ledc_channel);
 }
+
+void MARK_()
+{
+  STOP_60KHZ;
+  digitalWrite(WWVB_OutInv, LOW);
+  if (WWVB_Enable)
+    digitalWrite(WWVB_OutPin, HIGH);
+}
+
+void SPACE_()
+{
+  START_60KHZ;
+  digitalWrite(WWVB_OutInv, HIGH);
+  digitalWrite(WWVB_OutPin, LOW);
+}
+
+/*///////////////////////////////////////////////////////////////////////////*/
 
 void setup() {
   // put your setup code here, to run once:
