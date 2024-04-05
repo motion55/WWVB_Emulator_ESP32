@@ -55,13 +55,13 @@ bool first_hour = 0;
 #if _USE_60KHZ_
 #define STOP_60KHZ                                                             \
   {                                                                            \
-    ledc_channel.duty = 0;                                                     \
+    ledc_channel.duty = 2;                                                     \
     ledc_channel_config(&ledc_channel);                                        \
   }
 
 #define START_60KHZ                                                            \
   {                                                                            \
-    ledc_channel.duty = 1;                                                     \
+    ledc_channel.duty = 16;                                                    \
     ledc_channel_config(&ledc_channel);                                        \
   }
 #else
@@ -99,7 +99,7 @@ static void ledc_init(void) {
   ledc_timer_config_t ledc_timer;
   ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
   ledc_timer.timer_num = LEDC_TIMER_1;
-  ledc_timer.duty_resolution = LEDC_TIMER_1_BIT;
+  ledc_timer.duty_resolution = LEDC_TIMER_5_BIT;
   ledc_timer.freq_hz = 60000; // set output frequency at 2.7 MHz
   //ledc_timer.clk_cfg = LEDC_APB_CLK;
   ledc_timer_config(&ledc_timer);
@@ -110,7 +110,7 @@ static void ledc_init(void) {
   ledc_channel.timer_sel = LEDC_TIMER_1;
   ledc_channel.intr_type = LEDC_INTR_DISABLE;
   ledc_channel.gpio_num = WWVB_60KHZ;
-  ledc_channel.duty = 1; // set duty at about 50%
+  ledc_channel.duty = 16; // set duty at about 50%
   ledc_channel.hpoint = 0;
   ledc_channel_config(&ledc_channel);
 }
